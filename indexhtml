@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Digital Notice Board - QR</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f2f4f8;
+      padding-top: 100px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📱 Scan to Open Digital Notice Board</h1>
+
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://Sabaree123.github.io/Digital-Notice-Board/page.html">
+
+<p>Scan this QR to continue</p>
+
+</body>
+</html>
