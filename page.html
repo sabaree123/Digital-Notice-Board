@@ -66,7 +66,6 @@
     "Value of Time",
     "Role of Education"
   ];
-
   const events = [
     "Unit Test – Feb 10",
     "Model Exam – Mar 5",
@@ -76,16 +75,17 @@
 
   function setRole(role) {
     document.getElementById("roleSelect").style.display = "none";
-
     if (role === "student") {
       document.getElementById("studentView").style.display = "block";
       loadStudentView();
+      setInterval(loadStudentView, 1000); // auto refresh
     } else {
       document.getElementById("advisorView").style.display = "block";
       loadAdvisorView();
     }
   }
 
+  /* -------- STUDENT VIEW -------- */
   function loadStudentView() {
     document.getElementById("showStudent").innerText =
       localStorage.getItem("currentStudent") || "Not selected";
@@ -94,6 +94,7 @@
       localStorage.getItem("currentTopic") || "Not selected";
   }
 
+  /* -------- ADVISOR VIEW -------- */
   function loadAdvisorView() {
     loadStudents();
     loadEvents();
@@ -104,12 +105,6 @@
     ul.innerHTML = "";
 
     students.forEach((name, index) => {
-
-      let status = localStorage.getItem("student_" + index);
-      if (status === "done") {
-        return; // hide completed students
-      }
-
       const li = document.createElement("li");
 
       const select = document.createElement("select");
@@ -132,10 +127,19 @@
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
 
+      let status = localStorage.getItem("student_" + index);
+      if (status === "done") {
+        checkbox.checked = true;
+        li.classList.add("done");
+      }
+
       checkbox.onchange = function () {
         if (this.checked) {
           localStorage.setItem("student_" + index, "done");
-          loadStudents();
+          li.classList.add("done");
+        } else {
+          localStorage.removeItem("student_" + index);
+          li.classList.remove("done");
         }
       };
 
