@@ -58,129 +58,141 @@
 </div>
 
 <script>
-  const students = ["Arun", "Bala", "Divya", "Karthik", "Meena"];
-  const topics = [
-    "Importance of Discipline",
-    "Effects of Social Media",
-    "My Dream Career",
-    "Value of Time",
-    "Role of Education"
-  ];
-  const events = [
-    "Unit Test – Feb 10",
-    "Model Exam – Mar 5",
-    "Tech Symposium – Mar 12",
-    "Cultural Fest – Mar 20"
-  ];
+const students = ["Arun", "Bala", "Divya", "Karthik", "Meena"];
+const topics = [
+  "Importance of Discipline",
+  "Effects of Social Media",
+  "My Dream Career",
+  "Value of Time",
+  "Role of Education"
+];
+const events = [
+  "Unit Test – Feb 10",
+  "Model Exam – Mar 5",
+  "Tech Symposium – Mar 12",
+  "Cultural Fest – Mar 20"
+];
 
-  function setRole(role) {
-    document.getElementById("roleSelect").style.display = "none";
-    if (role === "student") {
-      document.getElementById("studentView").style.display = "block";
-      loadStudentView();
-      setInterval(loadStudentView, 1000); // auto refresh
-    } else {
-      document.getElementById("advisorView").style.display = "block";
-      loadAdvisorView();
+function setRole(role) {
+  document.getElementById("roleSelect").style.display = "none";
+  if (role === "student") {
+    document.getElementById("studentView").style.display = "block";
+    loadStudentView();
+    setInterval(loadStudentView, 1000);
+  } else {
+    document.getElementById("advisorView").style.display = "block";
+    loadAdvisorView();
+  }
+}
+
+/* ---------- STUDENT VIEW ---------- */
+function loadStudentView() {
+  document.getElementById("showStudent").innerText =
+    localStorage.getItem("activeStudent") || "Not selected";
+
+  document.getElementById("showTopic").innerText =
+    localStorage.getItem("activeTopic") || "Not selected";
+}
+
+/* ---------- ADVISOR VIEW ---------- */
+function loadAdvisorView() {
+  loadStudents();
+  loadEvents();
+}
+
+function loadStudents() {
+  const ul = document.getElementById("studentList");
+  ul.innerHTML = "";
+
+  students.forEach((name, index) => {
+    const li = document.createElement("li");
+
+    /* Topic selector */
+    const select = document.createElement("select");
+    topics.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.text = t;
+      select.appendChild(opt);
+    });
+
+    const savedTopic = localStorage.getItem("topic_" + index);
+    if (savedTopic) select.value = savedTopic;
+
+    select.onchange = function () {
+      localStorage.setItem("topic_" + index, this.value);
+    };
+
+    /* Active speaker button */
+    const activeBtn = document.createElement("button");
+    activeBtn.textContent = "Set Active";
+    activeBtn.onclick = function () {
+      localStorage.setItem("activeStudent", name);
+      localStorage.setItem("activeTopic", select.value);
+      alert(name + " is set as active speaker");
+    };
+
+    /* Completed checkbox */
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+
+    let status = localStorage.getItem("student_" + index);
+    if (status === "done") {
+      checkbox.checked = true;
+      li.classList.add("done");
     }
-  }
 
-  /* -------- STUDENT VIEW -------- */
-  function loadStudentView() {
-    document.getElementById("showStudent").innerText =
-      localStorage.getItem("currentStudent") || "Not selected";
-
-    document.getElementById("showTopic").innerText =
-      localStorage.getItem("currentTopic") || "Not selected";
-  }
-
-  /* -------- ADVISOR VIEW -------- */
-  function loadAdvisorView() {
-    loadStudents();
-    loadEvents();
-  }
-
-  function loadStudents() {
-    const ul = document.getElementById("studentList");
-    ul.innerHTML = "";
-
-    students.forEach((name, index) => {
-      const li = document.createElement("li");
-
-      const select = document.createElement("select");
-      topics.forEach(t => {
-        const opt = document.createElement("option");
-        opt.value = t;
-        opt.text = t;
-        select.appendChild(opt);
-      });
-
-      const savedTopic = localStorage.getItem("topic_" + index);
-      if (savedTopic) select.value = savedTopic;
-
-      select.onchange = function () {
-        localStorage.setItem("topic_" + index, this.value);
-        localStorage.setItem("currentStudent", name);
-        localStorage.setItem("currentTopic", this.value);
-      };
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-
-      let status = localStorage.getItem("student_" + index);
-      if (status === "done") {
-        checkbox.checked = true;
+    checkbox.onchange = function () {
+      if (this.checked) {
+        localStorage.setItem("student_" + index, "done");
         li.classList.add("done");
+      } else {
+        localStorage.removeItem("student_" + index);
+        li.classList.remove("done");
       }
+    };
 
-      checkbox.onchange = function () {
-        if (this.checked) {
-          localStorage.setItem("student_" + index, "done");
-          li.classList.add("done");
-        } else {
-          localStorage.removeItem("student_" + index);
-          li.classList.remove("done");
-        }
-      };
+    li.append(name + " ");
+    li.append(select);
+    li.append(" ");
+    li.append(activeBtn);
+    li.append(" Completed ");
+    li.append(checkbox);
 
-      li.append(name + " ");
-      li.append(select);
-      li.append(" Completed ");
-      li.append(checkbox);
-      ul.appendChild(li);
-    });
-  }
+    ul.appendChild(li);
+  });
+}
 
-  function loadEvents() {
-    const ul = document.getElementById("eventList");
-    ul.innerHTML = "";
+function loadEvents() {
+  const ul = document.getElementById("eventList");
+  ul.innerHTML = "";
 
-    events.forEach((event, index) => {
-      const li = document.createElement("li");
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
+  events.forEach((event, index) => {
+    const li = document.createElement("li");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
 
-      let status = localStorage.getItem("event_" + index);
-      if (status === "done") {
-        checkbox.checked = true;
+    let status = localStorage.getItem("event_" + index);
+    if (status === "done") {
+      checkbox.checked = true;
+      li.classList.add("done");
+    }
+
+    checkbox.onchange = function () {
+      if (this.checked) {
+        localStorage.setItem("event_" + index, "done");
         li.classList.add("done");
+      } else {
+        localStorage.removeItem("event_" + index);
+        li.classList.remove("done");
       }
+    };
 
-      checkbox.onchange = function () {
-        if (this.checked) {
-          localStorage.setItem("event_" + index, "done");
-          li.classList.add("done");
-        } else {
-          localStorage.removeItem("event_" + index);
-          li.classList.remove("done");
-        }
-      };
-
-      li.append(event + " Completed ");
-      li.append(checkbox);
-      ul.appendChild(li);
-    });
-  }
+    li.append(event + " Completed ");
+    li.append(checkbox);
+    ul.appendChild(li);
+  });
+}
 </script>
 
 </body>
