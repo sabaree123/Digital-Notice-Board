@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Digital Notice Board</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #eef2f7;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      width: 80%;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #3498db;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📢 Digital Notice Board</h1>
+
+<!-- Role selection -->
+<div id="roleSelect" class="card">
+  <h2>Select Role</h2>
+  <button onclick="setRole('student')">Student</button>
+  <button onclick="setRole('advisor')">Advisor</button>
+</div>
+
+<!-- Student View -->
+<div id="studentView" class="card" style="display:none;">
+  <h2>🎤 Snap Talk Topics</h2>
+  <ul>
+    <li>Importance of Discipline</li>
+    <li>Effects of Social Media</li>
+    <li>My Dream Career</li>
+    <li>Value of Time</li>
+    <li>Role of Education</li>
+  </ul>
+</div>
+
+<!-- Advisor View -->
+<div id="advisorView" class="card" style="display:none;">
+  <h2>📅 Exams & College Events</h2>
+  <ul>
+    <li>Unit Test – Feb 10</li>
+    <li>Model Exam – Mar 5</li>
+    <li>Tech Symposium – Mar 12</li>
+    <li>Cultural Fest – Mar 20</li>
+  </ul>
+</div>
+
+<script>
+  function setRole(role) {
+    document.getElementById("roleSelect").style.display = "none";
+
+    if (role === "student") {
+      document.getElementById("studentView").style.display = "block";
+    } else {
+      document.getElementById("advisorView").style.display = "block";
+    }
+  }
+</script>
+
+</body>
+</html>
