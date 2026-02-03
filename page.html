@@ -13,19 +13,14 @@
       background: white;
       padding: 20px;
       margin: 20px auto;
-      width: 80%;
+      width: 85%;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      border: none;
+    button, select {
+      padding: 8px 15px;
+      margin: 5px;
       border-radius: 5px;
-      background: #3498db;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
     }
     .done {
       text-decoration: line-through;
@@ -46,42 +41,62 @@
 
 <!-- Student View -->
 <div id="studentView" class="card" style="display:none;">
-  <h2>🎤 Snap Talk Topics</h2>
-  <ul>
-    <li>Importance of Discipline</li>
-    <li>Effects of Social Media</li>
-    <li>My Dream Career</li>
-    <li>Value of Time</li>
-    <li>Role of Education</li>
-  </ul>
+  <h2>🎤 Today’s Snap Talk</h2>
+  <p><b>Speaker:</b> <span id="showStudent"></span></p>
+  <p><b>Topic:</b> <span id="showTopic"></span></p>
 </div>
 
 <!-- Advisor View -->
 <div id="advisorView" class="card" style="display:none;">
-  <h2>📅 Exams & College Events</h2>
-  <ul>
-    <li>Unit Test – Feb 10</li>
-    <li>Model Exam – Mar 5</li>
-    <li>Tech Symposium – Mar 12</li>
-    <li>Cultural Fest – Mar 20</li>
-  </ul>
+  <h2>👨‍🏫 Advisor Panel</h2>
 
-  <h2>✅ Student Completion List</h2>
+  <h3>🎤 Student Snap Talk</h3>
   <ul id="studentList"></ul>
+
+  <h3>📅 Events & Exams</h3>
+  <ul id="eventList"></ul>
 </div>
 
 <script>
   const students = ["Arun", "Bala", "Divya", "Karthik", "Meena"];
+  const topics = [
+    "Importance of Discipline",
+    "Effects of Social Media",
+    "My Dream Career",
+    "Value of Time",
+    "Role of Education"
+  ];
+
+  const events = [
+    "Unit Test – Feb 10",
+    "Model Exam – Mar 5",
+    "Tech Symposium – Mar 12",
+    "Cultural Fest – Mar 20"
+  ];
 
   function setRole(role) {
     document.getElementById("roleSelect").style.display = "none";
 
     if (role === "student") {
       document.getElementById("studentView").style.display = "block";
+      loadStudentView();
     } else {
       document.getElementById("advisorView").style.display = "block";
-      loadStudents();
+      loadAdvisorView();
     }
+  }
+
+  function loadStudentView() {
+    document.getElementById("showStudent").innerText =
+      localStorage.getItem("currentStudent") || "Not selected";
+
+    document.getElementById("showTopic").innerText =
+      localStorage.getItem("currentTopic") || "Not selected";
+  }
+
+  function loadAdvisorView() {
+    loadStudents();
+    loadEvents();
   }
 
   function loadStudents() {
@@ -90,6 +105,24 @@
 
     students.forEach((name, index) => {
       const li = document.createElement("li");
+
+      const select = document.createElement("select");
+      topics.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t;
+        opt.text = t;
+        select.appendChild(opt);
+      });
+
+      const savedTopic = localStorage.getItem("topic_" + index);
+      if (savedTopic) select.value = savedTopic;
+
+      select.onchange = function () {
+        localStorage.setItem("topic_" + index, this.value);
+        localStorage.setItem("currentStudent", name);
+        localStorage.setItem("currentTopic", this.value);
+      };
+
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
 
@@ -109,8 +142,41 @@
         }
       };
 
-      li.appendChild(checkbox);
-      li.append(" " + name);
+      li.append(name + " ");
+      li.append(select);
+      li.append(" Completed ");
+      li.append(checkbox);
+      ul.appendChild(li);
+    });
+  }
+
+  function loadEvents() {
+    const ul = document.getElementById("eventList");
+    ul.innerHTML = "";
+
+    events.forEach((event, index) => {
+      const li = document.createElement("li");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+
+      let status = localStorage.getItem("event_" + index);
+      if (status === "done") {
+        checkbox.checked = true;
+        li.classList.add("done");
+      }
+
+      checkbox.onchange = function () {
+        if (this.checked) {
+          localStorage.setItem("event_" + index, "done");
+          li.classList.add("done");
+        } else {
+          localStorage.removeItem("event_" + index);
+          li.classList.remove("done");
+        }
+      };
+
+      li.append(event + " Completed ");
+      li.append(checkbox);
       ul.appendChild(li);
     });
   }
